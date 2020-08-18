@@ -84,3 +84,27 @@ end;*/
 /*select check_bill('GA0107691226',to_date('2016-12-06','YYYY-MM-DD ')) from dual;*/
   
 /*select check_bill('GA0107691228',to_date('2016-12-06','YYYY-MM-DD ')) from dual;*/
+
+--第三题
+--票据新增功能,使用存储过程
+/*create or replace procedure insert_bill(
+bill_id in varchar2,
+bill_type in varchar2,
+bill_edate in date,
+bill_money in varchar2,
+mon_type in varchar2,
+bill_date in date,
+bank_id in varchar2,
+bank_name in varchar2
+)
+is
+begin
+  insert into bill01 values(bill_id,bill_type,bill_edate,
+  bill_money,mon_type,bill_date,bank_id,bank_name);
+end;*/
+
+/*begin
+  insert_bill('GA0107691227','银行承兑汇票',to_date('2016-11-05','YYYY-MM-DD '),
+  '100万','人名币',to_date('2016-08-05','YYYY-MM-DD '),'305302032013','中国民生银行股份有限公司无锡分行');
+end;
+*/
