@@ -1,0 +1,127 @@
+--create table
+/*create table employee(
+   emp_name varchar2(20) primary key,
+   department varchar2(20),
+   java_coding number(5),
+   html_css number(5),
+   java_design number(5),
+   credit number(5) 
+)*/
+
+/*create table course01(
+   course_name varchar2(20) primary key,
+   course_credit number(5),
+   pass_score number(5),
+   avg_score number(5),
+   top_score number(5)
+);*/
+
+--插入数据
+/*insert into employee(emp_name,department,java_coding,html_css,java_design,credit)
+values('员工A','FinTech','78','75','60','45');
+insert into employee(emp_name,department,java_coding,html_css,credit)
+values('员工B','FinTech','50','70','0');
+insert into employee(emp_name,department,java_coding,html_css,java_design,credit)
+values('员工C','FinTech','70','80','70','65');
+insert into employee(emp_name,department,java_coding,java_design,credit)
+values('员工D','FinTech','90','85','45');
+insert into employee(emp_name,department,html_css,java_design,credit)
+values('员工E','FinTech','75','75','20');*/
+
+/*insert into course01(course_name,course_credit,pass_score)
+values('走进java编程世界','25','60');
+insert into course01(course_name,course_credit,pass_score)
+values('HTML和CSS网页设计','20','80');
+insert into course01(course_name,course_credit,pass_score)
+values('java设计模式','20','60');*/
+
+
+--第一题
+--当执行完员工成绩的插入后，要求在另一张表中更新成绩的平均分与最高分
+/*create or replace trigger AUTO_UPDATE
+after insert or update 
+on employee
+for each row
+  declare
+  avg_1 number(5);   --课程一的平均分
+  avg_2 number(5);
+  avg_3 number(5);
+  top_1 number(5);   --课程一的最高分
+  top_2 number(5);
+  top_3 number(5);
+  \*PRAGMA AUTONOMOUS_TRANSACTION;*\
+  begin
+    select avg(e.java_coding) into avg_1 from employee e;
+    update course01 set avg_score=avg_1 where course_name='走进Java编程世界';
+    select avg(e.html_css) into avg_2 from employee e;
+    update course01 set avg_score=avg_2 where course_name='HTML和CSS网页技术';
+    select avg(e.java_design) into avg_3 from employee e;
+    update course01 set avg_score=avg_3 where course_name='Java设计模式';
+    select max(e.java_coding) into top_1 from employee e;
+    update course01 set top_score=top_1 where course_name='走进Java编程世界';
+    select max(e.java_coding) into top_2 from employee e;
+    update course01 set top_score=top_2 where course_name='HTML和CSS网页技术';
+    select max(e.java_coding) into top_3 from employee e;
+    update course01 set top_score=top_3 where course_name='Java设计模式';
+  \*commit;*\
+  end;*/
+  
+/*update employee set html_css='65' where emp_name='员工A';*/
+
+
+/*update employee set html_css='70' where emp_name='员工A';*/
+
+
+--第二题
+/*select e.emp_name,e.credit from employee e
+where e.credit>=40;*/
+
+
+--第三题
+-- 查询员工的总学分是否达标，输入参数(员工名)
+/*create or replace function chaxun_emp(
+p_in_empname in varchar2  --员工名
+)
+return varchar2
+is
+p_credit number(5);
+p_outline varchar2(10);
+begin
+  --获取员工的学分
+  select e.credit into p_credit from employee e
+  where e.emp_name=p_in_empname;
+  --判断学分是否大于45
+  if p_credit>=45 then
+    p_outline:='达标';
+  else
+    p_outline:='不达标';
+  end if;  
+end;*/
+
+/*create or replace procedure cha_emp(
+p_in_empname in varchar2,
+p_outline out varchar2
+)
+is
+p_credit number:=0;
+begin
+  select e.credit into p_credit from employee e
+  where e.emp_name=p_in_empname;
+  if p_credit>=45 then
+    p_outline='达标';
+  else then
+    p_outline='不达标';
+end;
+*/
+
+/*select chaxun_emp('员工A') from dual;*/
+
+
+--第四题
+--让一个sql语句的执行计划走索引
+/*create index java_coding_score on employee(emp_name,java_coding);
+*/
+
+select e.emp_name,e.java_coding
+from employee e
+where e.java_coding>80;
