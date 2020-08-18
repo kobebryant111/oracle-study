@@ -1,0 +1,86 @@
+--三张表：conn01,service02,bill01
+--create table
+
+/*create table service02(
+service_id varchar2(20) primary key,
+service_date date,
+service_money varchar2(20),
+money_type varchar2(20),
+service_type varchar2(20),
+customer_id varchar2(20),
+service_balance varchar2(20),
+service_edate date,
+service_status varchar2(5)
+);
+
+create table conn01(
+conn_id varchar2(20) primary key,
+service_id varchar2(20),
+bill_id varchar2(20)
+)
+
+create table bill01(
+bill_id varchar2(20) primary key,
+bill_type varchar2(20),
+bill_edate date,
+bill_money varchar2(20),
+mon_type varchar2(20),
+bill_date date,
+bank_id varchar2(50),
+bank_name varchar2(50)
+)*/
+
+--以下两部都是为了实现主键递增
+--创建一个序列
+/*create sequence conn_id_sequence
+increment by 1
+start with 1
+nomaxvalue
+nocache;*/
+
+/*create trigger conn_id_autoincrement 
+before insert 
+on conn01 
+for each row 
+when (new.conn_id is null)
+begin
+select conn_id_sequence.nextval into：new.conn_id from dual;
+end;*/
+
+
+--第二题
+--插入一些检验数据
+/*insert into bill01 values('GA0107691226','银行承兑汇票',
+to_date('2016-12-05','YYYY-MM-DD '),'100万','人名币',
+to_date('2016-06-05','YYYY-MM-DD '),'305302032013','中国民生银行股份有限公司无锡分行');
+*/
+
+--编写程序判断票据是否有效
+/*create or replace function check_bill(
+b_in_id in varchar2,   --票据号
+today_time date
+)
+return varchar2
+is
+b_date date;
+b_putline varchar2(40);
+begin
+  select b.bill_edate into b_date from bill01 b
+  where b.bill_id=b_in_id;
+  if b_date=null then
+    b_putline:='票据库中没有该票据，是假票据';
+  else
+    if today_time>=b_date then
+      b_putline:='票据已经过期，是假票据';
+    else
+      b_putline:='该票据是真票据';
+    end if;
+  end if;
+  return b_putline;
+end;*/
+
+/*select check_bill('GA0107691226',to_date('2016-12-04','YYYY-MM-DD ')) from dual;*/
+
+/*select check_bill('GA0107691226',to_date('2016-12-06','YYYY-MM-DD ')) from dual;*/
+  
+/*select check_bill('GA0107691228',to_date('2016-12-06','YYYY-MM-DD ')) from dual;*/
