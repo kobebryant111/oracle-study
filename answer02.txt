@@ -1,110 +1,114 @@
---三张表：conn01,service02,bill01
---create table
+/*drop table business_info;
+drop table bill_info;
+drop table business_bill;*/
 
-/*create table service02(
-service_id varchar2(20) primary key,
-service_date date,
-service_money varchar2(20),
-money_type varchar2(20),
-service_type varchar2(20),
-customer_id varchar2(20),
-service_balance varchar2(20),
-service_edate date,
-service_status varchar2(5)
+--业务表
+/*create table business_info
+(
+  ID VARCHAR2(100) primary key,   --主键号
+  BUSINESS_CODE VARCHAR2(200),    --业务号
+  START_DATE DATE,                --业务发生时间 
+  OCCURRENCE_AMOUNT NUMBER(10,2), --业务发生额
+  CURRENCY_TYPE VARCHAR2(100),    --币种类型
+  BUSINESS_TYPE VARCHAR2(100),    --业务类型
+  CUSTOMER_ID VARCHAR2(100),      --客户ID
+	BALANCE NUMBER(10,2),           --业务余额
+	END_DATE DATE,                  --终结日期
+	STATUS VARCHAR2(1)              --业务状态
 );
-
-create table conn01(
-conn_id varchar2(20) primary key,
-service_id varchar2(20),
-bill_id varchar2(20)
-)
-
-create table bill01(
-bill_id varchar2(20) primary key,
-bill_type varchar2(20),
-bill_edate date,
-bill_money varchar2(20),
-mon_type varchar2(20),
-bill_date date,
-bank_id varchar2(50),
-bank_name varchar2(50)
-)*/
-
---以下两部都是为了实现主键递增
---创建一个序列
-/*create sequence conn_id_sequence
-increment by 1
-start with 1
-nomaxvalue
-nocache;*/
-
-/*create trigger conn_id_autoincrement 
-before insert 
-on conn01 
-for each row 
-when (new.conn_id is null)
-begin
-select conn_id_sequence.nextval into：new.conn_id from dual;
-end;*/
-
-
---第二题
---插入一些检验数据
-/*insert into bill01 values('GA0107691226','银行承兑汇票',
-to_date('2016-12-05','YYYY-MM-DD '),'100万','人名币',
-to_date('2016-06-05','YYYY-MM-DD '),'305302032013','中国民生银行股份有限公司无锡分行');
 */
+--票据表
+/*create table BILL_INFO
+(
+	ID VARCHAR2(100) primary key,    --主键号
+	BILL_CODE VARCHAR2(200),         --票据号
+	BILL_TYPE_NAME VARCHAR2(200),    --票据类型名称
+	BILL_END_DATE DATE,              --票据到期日
+	BILL_AMOUNT NUMBER(10,2),        --票面金额
+	CURRENCY_TYPE VARCHAR2(100),     --币种类型
+	BILL_OPEN_DATE DATE,             --开票日期
+	BANK_CODE VARCHAR2(200),         --承兑行行号
+	BANK_NAME VARCHAR2(200)          --承兑行名称
+);*/
 
---编写程序判断票据是否有效
-/*create or replace function check_bill(
-b_in_id in varchar2,   --票据号
-today_time date
+--关系表
+/*create table BUSINESS_BILL
+(
+	ID VARCHAR2(100) primary key,    --主键号
+	BUSINESS_ID VARCHAR2(100),       --业务id
+	BILL_ID VARCHAR2(100),           --票id
+	STATUS VARCHAR2(1)               --关联状态
+);*/
+
+--第一题：检查票据的有效性
+/*create or replace function check_bill01(
+p_bill_code in varchar2
 )
 return varchar2
-is
-b_date date;
-b_putline varchar2(40);
+is 
+result varchar2(100);
 begin
-  select b.bill_edate into b_date from bill01 b
-  where b.bill_id=b_in_id;
-  if b_date=null then
-    b_putline:='票据库中没有该票据，是假票据';
-  else
-    if today_time>=b_date then
-      b_putline:='票据已经过期，是假票据';
-    else
-      b_putline:='该票据是真票据';
-    end if;
-  end if;
-  return b_putline;
+  select case when count(1)>0 then '无效' else '有效'
+  end into result
+  from bill_info b
+  where b.bill_code=p_bill_code and b.bill_end_date<sysdate;
+  return result;
 end;*/
 
-/*select check_bill('GA0107691226',to_date('2016-12-04','YYYY-MM-DD ')) from dual;*/
-
-/*select check_bill('GA0107691226',to_date('2016-12-06','YYYY-MM-DD ')) from dual;*/
-  
-/*select check_bill('GA0107691228',to_date('2016-12-06','YYYY-MM-DD ')) from dual;*/
-
---第三题
---票据新增功能,使用存储过程
-/*create or replace procedure insert_bill(
-bill_id in varchar2,
-bill_type in varchar2,
-bill_edate in date,
-bill_money in varchar2,
-mon_type in varchar2,
-bill_date in date,
-bank_id in varchar2,
-bank_name in varchar2
-)
-is
-begin
-  insert into bill01 values(bill_id,bill_type,bill_edate,
-  bill_money,mon_type,bill_date,bank_id,bank_name);
-end;*/
-
-/*begin
-  insert_bill('GA0107691227','银行承兑汇票',to_date('2016-11-05','YYYY-MM-DD '),
-  '100万','人名币',to_date('2016-08-05','YYYY-MM-DD '),'305302032013','中国民生银行股份有限公司无锡分行');
-end;
+/*INSERT INTO BILL_INFO (ID, BILL_CODE, BILL_TYPE_NAME, BILL_END_DATE, BILL_AMOUNT, CURRENCY_TYPE, BILL_OPEN_DATE, BANK_CODE, BANK_NAME) VALUES ('1', 'GA0107691226', '银行承兑汇票', TO_DATE('2016-12-05 00:00:00', 'YYYY-MM-DD HH24:MI:SS'), 1000000.00, '1', TO_DATE('2016-06-05 00:00:00', 'YYYY-MM-DD HH24:MI:SS'), '305302032013', '中国民生银行股份有限公司无锡分行');
+INSERT INTO BILL_INFO (ID, BILL_CODE, BILL_TYPE_NAME, BILL_END_DATE, BILL_AMOUNT, CURRENCY_TYPE, BILL_OPEN_DATE, BANK_CODE, BANK_NAME) VALUES ('2', '305005323111250', '银行承兑汇票', TO_DATE('2017-06-30 00:00:00', 'YYYY-MM-DD HH24:MI:SS'), 2000000.00, '1', TO_DATE('2016-06-30 00:00:00', 'YYYY-MM-DD HH24:MI:SS'), '103461049405', '中国农业银行济宁市分行');
+INSERT INTO BILL_INFO (ID, BILL_CODE, BILL_TYPE_NAME, BILL_END_DATE, BILL_AMOUNT, CURRENCY_TYPE, BILL_OPEN_DATE, BANK_CODE, BANK_NAME) VALUES ('3', '3090005325879509', '银行承兑汇票', TO_DATE('2017-04-30 00:00:00', 'YYYY-MM-DD HH24:MI:SS'), 1500000.00, '1', TO_DATE('2016-04-30 00:00:00', 'YYYY-MM-DD HH24:MI:SS'), '305397023008', '中国民生银行股份有限公司泉州分行');
+INSERT INTO BILL_INFO (ID, BILL_CODE, BILL_TYPE_NAME, BILL_END_DATE, BILL_AMOUNT, CURRENCY_TYPE, BILL_OPEN_DATE, BANK_CODE, BANK_NAME) VALUES ('4', '3130005121349568', '银行承兑汇票', TO_DATE('2016-11-24 00:00:00', 'YYYY-MM-DD HH24:MI:SS'), 800000.00, '1', TO_DATE('2016-05-24 00:00:00', 'YYYY-MM-DD HH24:MI:SS'), '313290020059', '北京银行股份有限公司上海闵行支行');
+INSERT INTO BILL_INFO (ID, BILL_CODE, BILL_TYPE_NAME, BILL_END_DATE, BILL_AMOUNT, CURRENCY_TYPE, BILL_OPEN_DATE, BANK_CODE, BANK_NAME) VALUES ('5', '3130005129336016', '银行承兑汇票', TO_DATE('2016-11-24 00:00:00', 'YYYY-MM-DD HH24:MI:SS'), 800000.00, '1', TO_DATE('2016-05-24 00:00:00', 'YYYY-MM-DD HH24:MI:SS'), '313290020059', '北京银行股份有限公司上海闵行支行');
 */
+
+--进行验证
+/*select check_bill01('GA0107691226') from dual;*/
+
+
+--第二题：实现票据终结功能
+/*create or replace procedure billend
+is
+p_bussiness_id varchar2(200);
+begin
+  --查询所有的过期票据(然后再对过期的票据进行处理)
+  for cur in(select * from bill_info b where b.bill_end_date<sysdate and exists(select 1 from business_bill bb where bb.status=1 and bb.bill_id=b.id))loop
+    --记录对应的业务id
+    select bb.business_id into p_bussiness_id from business_bill where bill_id=cur.id and status=1;
+    --修改业务余额与状态（若余额为0状态改为失效）
+    update business_info set balance=(balance-cur.bill_amount),
+                     status=(case when(balance-cur.bill_amount)>0 then 1 else 0 end),
+                     end_date=(case when(balance-cur.bill_amount)>0 then null else sysdate end)
+    where id=p_business_id;
+    --修改关联表状态为失联
+    update business_bill set status=0
+    where bill_id=cur_id and status=1;
+  end loop;
+end;*/
+    
+
+--第三题：数据插入
+/*INSERT INTO BUSINESS_BILL (ID, BUSINESS_ID, BILL_ID, STATUS) VALUES ('1', '1', '1', '1');
+INSERT INTO BUSINESS_BILL (ID, BUSINESS_ID, BILL_ID, STATUS) VALUES ('2', '1', '2', '1');
+INSERT INTO BUSINESS_BILL (ID, BUSINESS_ID, BILL_ID, STATUS) VALUES ('3', '1', '3', '1');
+INSERT INTO BUSINESS_BILL (ID, BUSINESS_ID, BILL_ID, STATUS) VALUES ('4', '2', '4', '1');
+INSERT INTO BUSINESS_BILL (ID, BUSINESS_ID, BILL_ID, STATUS) VALUES ('5', '2', '5', '1');
+
+INSERT INTO BUSINESS_INFO (ID, BUSINESS_CODE, START_DATE, OCCURRENCE_AMOUNT, CURRENCY_TYPE, BUSINESS_TYPE, CUSTOMER_ID, BALANCE, END_DATE, STATUS) VALUES ('1', 'BUS001', TO_DATE('2016-07-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS'), 4500000.00, '1', '1', '001', 4500000.00, null, '1');
+INSERT INTO BUSINESS_INFO (ID, BUSINESS_CODE, START_DATE, OCCURRENCE_AMOUNT, CURRENCY_TYPE, BUSINESS_TYPE, CUSTOMER_ID, BALANCE, END_DATE, STATUS) VALUES ('2', 'BUS002', TO_DATE('2016-07-02 00:00:00', 'YYYY-MM-DD HH24:MI:SS'), 1600000.00, '1', '2', '002', 1600000.00, null, '1');
+*/
+
+
+--第四题：查询
+select b.id,b.bill_code from bill_info b,business_bill bb
+where bb.status=1 and b.bill_end_date>sysdate+180;
+
+create index bill_info_bill_end_date_index on bill_info(bill_end_date);
+create index business_bill_bill_id_index on business_bill(bill_id); 
+
+
+
+
+
+
+
